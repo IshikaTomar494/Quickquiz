@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff9f2;
+      margin: 0;
+    }
+    #quiz-container {
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+      max-width: 600px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff6b6b;
+      font-size: 24px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ffc09f;
+      background-color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ffe0c9;
+    }
+    .correct {
+      background-color: #c8f7c5 !important;
+    }
+    .incorrect {
+      background-color: #f7c5c5 !important;
+    }
+    #result {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #4caf50;
+    }
+    canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div id="quiz-container">
+    <h2 id="question"></h2>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    const quiz = [
+      { q: "What is Artificial Intelligence (AI)?", a: "The simulation of human intelligence in machines that are programmed to think and learn.",
+    options: [
+      "A programming language",
+      "A field that studies animal intelligence",
+      "The simulation of human intelligence in machines that are programmed to think and learn.",
+      "The ability of humans to understand computers"
+    ] },
+  { q: "Who coined the term Artificial Intelligence?", a: "John McCarthy in 1956 during the Dartmouth Conference.",
+    options: [
+      "Alan Turing",
+      "John McCarthy in 1956 during the Dartmouth Conference.",
+      "Geoffrey Hinton",
+      "Andrew Ng"
+    ] },
+  { q: "What is the Turing Test?", a: "A test to determine if a machine can exhibit intelligent behavior indistinguishable from a human.",
+    options: [
+      "A test of computer speed",
+      "A test to measure neural networks",
+      "A test to determine if a machine can exhibit intelligent behavior indistinguishable from a human.",
+      "A programming certification"
+    ] },
+  { q: "What are the main goals of AI?", a: "To create systems that can think, learn, solve problems, perceive, and understand language.",
+    options: [
+      "To create faster computers",
+      "To play video games",
+      "To create systems that can think, learn, solve problems, perceive, and understand language.",
+      "To replace all human jobs"
+    ] },
+  { q: "What is Machine Learning?", a: "A subset of AI that allows machines to learn from data and improve from experience without being explicitly programmed.",
+    options: [
+      "Learning to build machines",
+      "Programming robots",
+      "A subset of AI that allows machines to learn from data and improve from experience without being explicitly programmed.",
+      "A game development technique"
+    ] },
+  { q: "Which of the following is NOT a type of Machine Learning?", a: "Transitional Learning",
+    options: [
+      "Supervised Learning",
+      "Unsupervised Learning",
+      "Reinforcement Learning",
+      "Transitional Learning"
+    ] },
+  { q: "What is Deep Learning?", a: "A branch of machine learning using neural networks with many layers to model complex patterns in data.",
+    options: [
+      "Shallow decision making",
+      "A neural network with only one layer",
+      "A branch of machine learning using neural networks with many layers to model complex patterns in data.",
+      "AI used only for speech"
+    ] },
+  { q: "What is a Neural Network?", a: "A computational model inspired by the human brain, consisting of nodes (neurons) organized in layers.",
+    options: [
+      "A human brain",
+      "A type of database",
+      "A computational model inspired by the human brain, consisting of nodes (neurons) organized in layers.",
+      "An algorithm for file compression"
+    ] },
+  { q: "What is Natural Language Processing (NLP)?", a: "A field of AI that enables machines to understand, interpret, and generate human language.",
+    options: [
+      "A machine's ability to translate programming languages",
+      "The field of biology that studies sounds",
+      "A field of AI that enables machines to understand, interpret, and generate human language.",
+      "AI for facial recognition"
+    ] },
+  { q: "What is an Expert System?", a: "An AI program that simulates the judgment and behavior of a human expert in a specific field.",
+    options: [
+      "A program that runs games",
+      "An AI that repairs hardware",
+      "An AI program that simulates the judgment and behavior of a human expert in a specific field.",
+      "A web development tool"
+         ]}
+    ];
+
+    let current = 0, score = 0;
+
+    function showQuestion() {
+      document.getElementById("result").innerText = "";
+      const q = quiz[current];
+      document.getElementById("question").innerText = `Q${current + 1}. ${q.q}`;
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => handleAnswer(btn, q.a);
+        options.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, correctAnswer) {
+      const buttons = document.querySelectorAll("#options button");
+      buttons.forEach(b => b.disabled = true);
+
+      if (btn.innerText === correctAnswer) {
+        btn.classList.add("correct");
+        score++;
+        confetti();
+        setTimeout(() => {
+          current++;
+          if (current < quiz.length) {
+            showQuestion();
+          } else {
+            showScore();
+          }
+        }, 1000);
+      } else {
+        btn.classList.add("incorrect");
+        document.getElementById("result").innerText = "Oops! Try again.";
+        buttons.forEach(b => b.disabled = false);
+      }
+    }
+
+    function showScore() {
+      document.getElementById("question").innerText = `🎉 Congratulations! You scored ${score} out of ${quiz.length}!`;
+      document.getElementById("options").innerHTML = "";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

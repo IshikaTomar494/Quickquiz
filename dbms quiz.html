@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DBMS Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff9f2;
+      margin: 0;
+    }
+    #quiz-container {
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+      max-width: 600px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff6b6b;
+      font-size: 24px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ffc09f;
+      background-color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ffe0c9;
+    }
+    .correct {
+      background-color: #c8f7c5 !important;
+    }
+    .incorrect {
+      background-color: #f7c5c5 !important;
+    }
+    #result {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #4caf50;
+    }
+    canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div id="quiz-container">
+    <h2 id="question"></h2>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    const quiz = [
+      { q: "What is Computer Architecture?", a: "The design and organization of a computer’s components and systems.",
+    options: [
+      "A type of computer virus",
+      "The art of building physical computer labs",
+      "The design and organization of a computer’s components and systems.",
+      "The coding style used in Java"
+    ] },
+  { q: "Which of the following is a type of computer architecture?", a: "Von Neumann Architecture",
+    options: [
+      "Boolean Architecture",
+      "Von Neumann Architecture",
+      "Turbo Architecture",
+      "NAND Architecture"
+    ] },
+  { q: "What is the main function of the Control Unit (CU)?", a: "To direct the operation of the processor.",
+    options: [
+      "To store data permanently",
+      "To print documents",
+      "To connect the monitor",
+      "To direct the operation of the processor."
+    ] },
+  { q: "What does ALU stand for?", a: "Arithmetic Logic Unit",
+    options: [
+      "Application Level Unit",
+      "Advanced Logic User",
+      "Arithmetic Logic Unit",
+      "Asynchronous Level Utility"
+    ] },
+  { q: "What is a register in a CPU?", a: "A small, fast storage location within the CPU used to hold temporary data and instructions.",
+    options: [
+      "A location on the hard drive",
+      "A password-protected area of memory",
+      "A small, fast storage location within the CPU used to hold temporary data and instructions.",
+      "An external memory chip"
+    ] },
+  { q: "Which memory is the fastest in terms of access time?", a: "Registers",
+    options: [
+      "Hard Disk",
+      "RAM",
+      "Registers",
+      "Cache Memory"
+    ] },
+  { q: "What is pipelining in computer architecture?", a: "A technique where multiple instruction phases are overlapped to improve performance.",
+    options: [
+      "A method to connect CPUs",
+      "A software debugging method",
+      "A technique where multiple instruction phases are overlapped to improve performance.",
+      "A process of formatting storage devices"
+    ] },
+  { q: "What is the function of the Program Counter (PC)?", a: "It holds the address of the next instruction to be executed.",
+    options: [
+      "It stores the result of ALU operations",
+      "It holds the address of the next instruction to be executed.",
+      "It counts the number of programs installed",
+      "It keeps track of user logins"
+    ] },
+  { q: "Which of the following is a characteristic of RISC (Reduced Instruction Set Computer)?", a: "Uses a small set of simple instructions for faster execution.",
+    options: [
+      "Has many complex instructions",
+      "Can only run graphics programs",
+      "Uses a small set of simple instructions for faster execution.",
+      "Designed for mobile phones only"
+    ] },
+  { q: "What is the main role of Cache Memory?", a: "To store frequently accessed data for quick retrieval by the CPU.",
+    options: [
+      "To store permanent data",
+      "To increase hard disk space",
+      "To store frequently accessed data for quick retrieval by the CPU.",
+      "To power the system when off"
+        ] }
+    ];
+
+    let current = 0, score = 0;
+
+    function showQuestion() {
+      document.getElementById("result").innerText = "";
+      const q = quiz[current];
+      document.getElementById("question").innerText = `Q${current + 1}. ${q.q}`;
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => handleAnswer(btn, q.a);
+        options.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, correctAnswer) {
+      const buttons = document.querySelectorAll("#options button");
+      buttons.forEach(b => b.disabled = true);
+
+      if (btn.innerText === correctAnswer) {
+        btn.classList.add("correct");
+        score++;
+        confetti();
+        setTimeout(() => {
+          current++;
+          if (current < quiz.length) {
+            showQuestion();
+          } else {
+            showScore();
+          }
+        }, 1000);
+      } else {
+        btn.classList.add("incorrect");
+        document.getElementById("result").innerText = "Oops! Try again.";
+        buttons.forEach(b => b.disabled = false);
+      }
+    }
+
+    function showScore() {
+      document.getElementById("question").innerText = `🎉 Congratulations! You scored ${score} out of ${quiz.length}!`;
+      document.getElementById("options").innerHTML = "";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

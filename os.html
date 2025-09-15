@@ -1,0 +1,192 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Structures - Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #b2fefa, #0ed2f7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #003049;
+    }
+
+    .flashcard-container {
+      perspective: 1500px;
+      width: 90%;
+      max-width: 650px;
+      height: 350px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+      cursor: pointer;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: center;
+      background-color: #ffffff;
+    }
+
+    .flashcard-front {
+      background: #ffffff;
+      color: #222;
+    }
+
+    .flashcard-back {
+      background: #ffe8cc;
+      transform: rotateY(180deg);
+      color: #333;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #ff6b6b;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #ff4757;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    @media screen and (max-width: 500px) {
+      .flashcard-side {
+        font-size: 1rem;
+        padding: 20px;
+      }
+      button {
+        width: 100%;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Operating System Flashcards</h1>
+
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-side flashcard-front" id="card-front">Loading...</div>
+      <div class="flashcard-side flashcard-back" id="card-back">Loading...</div>
+    </div>
+  </div>
+
+  <button id="nextBtn">Next ➡️</button>
+  <button id="quizStartBtn" style="display: none;">Start Quiz</button>
+
+  <script>
+    const flashcard = document.getElementById('flashcard');
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizBtn = document.getElementById('quizStartBtn');
+
+    const flashcards = [
+        { question: "What is an Operating System?", answer: "A system software that manages computer hardware, software resources, and provides common services for computer programs." },
+  { question: "What are the main functions of an OS?", answer: "Process management, memory management, file system management, device management, and security." },
+  { question: "What is a process?", answer: "A program in execution." },
+  { question: "What is the difference between a process and a thread?", answer: "A process is an independent executing unit; a thread is the smallest unit of processing within a process." },
+  { question: "What is multitasking?", answer: "The ability of the OS to run multiple tasks (processes) simultaneously." },
+  { question: "What is a deadlock?", answer: "A situation where a set of processes are blocked because each process is holding a resource and waiting for another." },
+  { question: "What are the necessary conditions for deadlock?", answer: "Mutual exclusion, hold and wait, no preemption, and circular wait." },
+  { question: "What is virtual memory?", answer: "A memory management technique that gives an application the impression it has contiguous working memory." },
+  { question: "What is paging?", answer: "A memory management scheme that eliminates the need for contiguous allocation of physical memory." },
+  { question: "What is segmentation?", answer: "A memory management technique that divides the memory into different segments based on the logical divisions." },
+  { question: "What is a kernel?", answer: "The core part of an OS, responsible for managing system resources and communication between hardware and software." },
+  { question: "What is context switching?", answer: "The process of storing the state of a process so that it can be resumed later, allowing multiple processes to share a single CPU." },
+  { question: "What is a system call?", answer: "A programmatic way in which a computer program requests a service from the kernel of the OS." },
+  { question: "What is a file system?", answer: "A method and data structure the OS uses to control how data is stored and retrieved." },
+  { question: "What is a scheduler?", answer: "A component of the OS that decides which process runs at a given time." }
+
+    ];
+
+    let currentIndex = 0;
+
+    function loadCard(index) {
+      front.textContent = flashcards[index].question;
+      back.textContent = flashcards[index].answer;
+      flashcard.classList.remove("flipped");
+    }
+
+    flashcard.addEventListener("click", () => {
+      flashcard.classList.toggle("flipped");
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        loadCard(currentIndex);
+      } else {
+        front.textContent = "🎉 You're done!";
+        back.textContent = "Ready to test your knowledge?";
+        flashcard.classList.remove("flipped");
+        nextBtn.style.display = "none";
+        quizBtn.style.display = "inline-block";
+      }
+    });
+
+    
+    
+      quizBtn.addEventListener("click", () => {
+        window.location.href = " os quiz.html"; // ✅ Make sure quiz.html is the correct file name and path
+});
+
+    
+
+    loadCard(currentIndex);
+  </script>
+</body>
+</html>

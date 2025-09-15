@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CA Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff9f2;
+      margin: 0;
+    }
+    #quiz-container {
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+      max-width: 600px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff6b6b;
+      font-size: 24px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ffc09f;
+      background-color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ffe0c9;
+    }
+    .correct {
+      background-color: #c8f7c5 !important;
+    }
+    .incorrect {
+      background-color: #f7c5c5 !important;
+    }
+    #result {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #4caf50;
+    }
+    canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div id="quiz-container">
+    <h2 id="question"></h2>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    const quiz = [
+      { q: "What is Computer Architecture?", a: "The design and organization of a computer’s components and systems.",
+    options: [
+      "The physical size of a computer",
+      "A computer brand name",
+      "The design and organization of a computer’s components and systems.",
+      "None of the above"
+    ] },
+  { q: "What is the function of the Control Unit (CU)?", a: "It directs the operation of the processor by telling it how to respond to instructions.",
+    options: [
+      "Stores data temporarily",
+      "Directs the operation of the processor by telling it how to respond to instructions.",
+      "Manages computer network",
+      "Controls input devices"
+    ] },
+  { q: "What does ALU stand for?", a: "Arithmetic Logic Unit.",
+    options: [
+      "Array Lookup Unit",
+      "Application Level Utility",
+      "Arithmetic Logic Unit.",
+      "Advanced Logical Unit"
+    ] },
+  { q: "What is a register?", a: "A small, fast memory location inside the CPU to hold data temporarily.",
+    options: [
+      "A large hard disk",
+      "A keyboard component",
+      "A small, fast memory location inside the CPU to hold data temporarily.",
+      "An output device"
+    ] },
+  { q: "What is the purpose of the Program Counter (PC)?", a: "It holds the address of the next instruction to be executed.",
+    options: [
+      "Stores passwords",
+      "Counts number of processes",
+      "It holds the address of the next instruction to be executed.",
+      "Displays the output"
+    ] },
+  { q: "What is pipelining in processors?", a: "A technique where multiple instruction phases are overlapped to improve performance.",
+    options: [
+      "A data storage technique",
+      "A method to cool CPUs",
+      "A technique where multiple instruction phases are overlapped to improve performance.",
+      "A networking protocol"
+    ] },
+  { q: "What is cache memory?", a: "A small-sized type of volatile memory that provides high-speed data access to the processor.",
+    options: [
+      "An external USB storage",
+      "A system software",
+      "A small-sized type of volatile memory that provides high-speed data access to the processor.",
+      "A BIOS chip"
+    ] },
+  { q: "What is instruction set architecture (ISA)?", a: "The part of computer architecture related to programming, including instructions, registers, etc.",
+    options: [
+      "Set of drivers for devices",
+      "Database design rules",
+      "The part of computer architecture related to programming, including instructions, registers, etc.",
+      "Monitor display configuration"
+    ] },
+  { q: "What is RISC?", a: "Reduced Instruction Set Computer, with simpler instructions for faster execution.",
+    options: [
+      "Random Integrated Software Compiler",
+      "Rapid Input System Code",
+      "Reduced Instruction Set Computer, with simpler instructions for faster execution.",
+      "None of the above"
+    ] },
+  { q: "Von Neumann Architecture?", a: "A computer design model where the program and data share the same memory.",
+    options: [
+      "Uses separate memory for instructions",
+      "Only used in gaming PCs",
+      "A computer design model where the program and data share the same memory.",
+      "An ancient computer"
+        ] }
+    ];
+
+    let current = 0, score = 0;
+
+    function showQuestion() {
+      document.getElementById("result").innerText = "";
+      const q = quiz[current];
+      document.getElementById("question").innerText = `Q${current + 1}. ${q.q}`;
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => handleAnswer(btn, q.a);
+        options.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, correctAnswer) {
+      const buttons = document.querySelectorAll("#options button");
+      buttons.forEach(b => b.disabled = true);
+
+      if (btn.innerText === correctAnswer) {
+        btn.classList.add("correct");
+        score++;
+        confetti();
+        setTimeout(() => {
+          current++;
+          if (current < quiz.length) {
+            showQuestion();
+          } else {
+            showScore();
+          }
+        }, 1000);
+      } else {
+        btn.classList.add("incorrect");
+        document.getElementById("result").innerText = "Oops! Try again.";
+        buttons.forEach(b => b.disabled = false);
+      }
+    }
+
+    function showScore() {
+      document.getElementById("question").innerText = `🎉 Congratulations! You scored ${score} out of ${quiz.length}!`;
+      document.getElementById("options").innerHTML = "";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

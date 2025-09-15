@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff9f2;
+      margin: 0;
+    }
+    #quiz-container {
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+      max-width: 600px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff6b6b;
+      font-size: 24px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ffc09f;
+      background-color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ffe0c9;
+    }
+    .correct {
+      background-color: #c8f7c5 !important;
+    }
+    .incorrect {
+      background-color: #f7c5c5 !important;
+    }
+    #result {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #4caf50;
+    }
+    canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div id="quiz-container">
+    <h2 id="question"></h2>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    const quiz = [
+      { q: "What is a Data Structure?", a: "A way of organizing and storing data so that it can be accessed and modified efficiently.",
+        options: [
+          "Just a programming concept",
+          "A storage method in databases",
+          "A way of organizing and storing data so that it can be accessed and modified efficiently.",
+          "None of the above"
+        ] },
+      { q: "What is an Array?", a: "A collection of elements identified by index, stored in contiguous memory locations.",
+        options: [
+          "An unordered list",
+          "A type of file",
+          "A tree-based storage",
+          "A collection of elements identified by index, stored in contiguous memory locations."
+        ] },
+      { q: "What is a Linked List?", a: "A linear structure where each element (node) contains a value and a pointer to the next node.",
+        options: [
+          "A type of array",
+          "A graph",
+          "A linear structure where each element (node) contains a value and a pointer to the next node.",
+          "A file format"
+        ] },
+      { q: "Stack vs Queue?", a: "Stack: LIFO. Queue: FIFO. Stack removes the last item added; queue removes the first.",
+        options: [
+          "Stack is faster",
+          "Queue is unordered",
+          "They are the same",
+          "Stack: LIFO. Queue: FIFO. Stack removes the last item added; queue removes the first."
+        ] },
+      { q: "What is a Tree?", a: "A hierarchical structure with nodes. Each node may have children; top node is the root.",
+        options: [
+          "A type of file",
+          "Only used in AI",
+          "A hierarchical structure with nodes. Each node may have children; top node is the root.",
+          "A program"
+        ] },
+      { q: "What is a Hash Table?", a: "Maps keys to values using a hash function to compute the index in an array of buckets.",
+        options: [
+          "A table stored in memory",
+          "A table used for HTML",
+          "Maps keys to values using a hash function to compute the index in an array of buckets.",
+          "Used for animations"
+        ] },
+      { q: "What is a Graph?", a: "A collection of nodes (vertices) and edges connecting them.",
+        options: [
+          "A mathematical chart",
+          "Only for statistics",
+          "A table of rows",
+          "A collection of nodes (vertices) and edges connecting them."
+        ] },
+      { q: "Heap?", a: "A tree-based structure satisfying the heap property: max-heap (parent > children) or min-heap.",
+        options: [
+          "A file folder",
+          "A data dump",
+          "A tree-based structure satisfying the heap property: max-heap (parent > children) or min-heap.",
+          "An unordered list"
+        ] },
+      { q: "What is a Trie?", a: "A tree-like structure for storing strings, used for fast search, often in dictionaries.",
+        options: [
+          "A compressed array",
+          "Used in web development",
+          "A tree-like structure for storing strings, used for fast search, often in dictionaries.",
+          "Used in hashing"
+        ] },
+      { q: "Dynamic Programming?", a: "Solving problems by breaking into overlapping subproblems and storing the solutions.",
+        options: [
+          "Just recursion",
+          "Only used in ML",
+          "A sorting technique",
+          "Solving problems by breaking into overlapping subproblems and storing the solutions."
+        ] }
+    ];
+
+    let current = 0, score = 0;
+
+    function showQuestion() {
+      document.getElementById("result").innerText = "";
+      const q = quiz[current];
+      document.getElementById("question").innerText = `Q${current + 1}. ${q.q}`;
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => handleAnswer(btn, q.a);
+        options.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, correctAnswer) {
+      const buttons = document.querySelectorAll("#options button");
+      buttons.forEach(b => b.disabled = true);
+
+      if (btn.innerText === correctAnswer) {
+        btn.classList.add("correct");
+        score++;
+        confetti();
+        setTimeout(() => {
+          current++;
+          if (current < quiz.length) {
+            showQuestion();
+          } else {
+            showScore();
+          }
+        }, 1000);
+      } else {
+        btn.classList.add("incorrect");
+        document.getElementById("result").innerText = "Oops! Try again.";
+        buttons.forEach(b => b.disabled = false);
+      }
+    }
+
+    function showScore() {
+      document.getElementById("question").innerText = `🎉 Congratulations! You scored ${score} out of ${quiz.length}!`;
+      document.getElementById("options").innerHTML = "";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

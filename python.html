@@ -1,0 +1,191 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Structures - Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #b2fefa, #0ed2f7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #003049;
+    }
+
+    .flashcard-container {
+      perspective: 1500px;
+      width: 90%;
+      max-width: 650px;
+      height: 350px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+      cursor: pointer;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: center;
+      background-color: #ffffff;
+    }
+
+    .flashcard-front {
+      background: #ffffff;
+      color: #222;
+    }
+
+    .flashcard-back {
+      background: #ffe8cc;
+      transform: rotateY(180deg);
+      color: #333;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #ff6b6b;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #ff4757;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    @media screen and (max-width: 500px) {
+      .flashcard-side {
+        font-size: 1rem;
+        padding: 20px;
+      }
+      button {
+        width: 100%;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Python Flashcards</h1>
+
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-side flashcard-front" id="card-front">Loading...</div>
+      <div class="flashcard-side flashcard-back" id="card-back">Loading...</div>
+    </div>
+  </div>
+
+  <button id="nextBtn">Next ➡️</button>
+  <button id="quizStartBtn" style="display: none;">Start Quiz</button>
+
+  <script>
+    const flashcard = document.getElementById('flashcard');
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizBtn = document.getElementById('quizStartBtn');
+
+    const flashcards = [
+     { question: "What is Python?", answer: "Python is a high-level, interpreted, general-purpose programming language known for its readability and simplicity." },
+  { question: "What are Python’s key features?", answer: "Easy syntax, interpreted, dynamically typed, supports object-oriented and functional programming, vast libraries." },
+  { question: "What is PEP 8?", answer: "PEP 8 is Python's style guide for writing clean and readable code." },
+  { question: "What are Python data types?", answer: "int, float, str, list, tuple, set, dict, bool, NoneType." },
+  { question: "What is the difference between list and tuple?", answer: "Lists are mutable, whereas tuples are immutable." },
+  { question: "What is a dictionary in Python?", answer: "A collection of key-value pairs, defined using curly braces `{}`." },
+  { question: "What are *args and **kwargs?", answer: "`*args` allows passing a variable number of positional arguments, `**kwargs` allows passing keyword arguments." },
+  { question: "What is the difference between `is` and `==`?", answer: "`is` checks identity (memory location), `==` checks equality of values." },
+  { question: "What is a lambda function?", answer: "An anonymous, one-line function defined using the `lambda` keyword." },
+  { question: "What is list comprehension?", answer: "A concise way to create lists using a single line of code." },
+  { question: "What is a Python module?", answer: "A file containing Python definitions and functions, saved with a `.py` extension." },
+  { question: "What is the difference between `deepcopy` and `copy`?", answer: "`copy` creates a shallow copy, `deepcopy` creates a completely independent clone of objects." },
+  { question: "What is the use of `__init__`?", answer: "`__init__` is a constructor method automatically called when a class instance is created." },
+  { question: "What is exception handling in Python?", answer: "Handling runtime errors using `try`, `except`, `finally`, and `raise` blocks." },
+  { question: "What is a virtual environment in Python?", answer: "An isolated environment used to manage project-specific dependencies." }
+    ];
+
+    let currentIndex = 0;
+
+    function loadCard(index) {
+      front.textContent = flashcards[index].question;
+      back.textContent = flashcards[index].answer;
+      flashcard.classList.remove("flipped");
+    }
+
+    flashcard.addEventListener("click", () => {
+      flashcard.classList.toggle("flipped");
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        loadCard(currentIndex);
+      } else {
+        front.textContent = "🎉 You're done!";
+        back.textContent = "Ready to test your knowledge?";
+        flashcard.classList.remove("flipped");
+        nextBtn.style.display = "none";
+        quizBtn.style.display = "inline-block";
+      }
+    });
+
+    
+    
+      quizBtn.addEventListener("click", () => {
+        window.location.href = " python quiz.html"; // ✅ Make sure quiz.html is the correct file name and path
+});
+
+    
+
+    loadCard(currentIndex);
+  </script>
+</body>
+</html>

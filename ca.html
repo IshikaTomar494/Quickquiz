@@ -1,0 +1,191 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Structures - Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #b2fefa, #0ed2f7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #003049;
+    }
+
+    .flashcard-container {
+      perspective: 1500px;
+      width: 90%;
+      max-width: 650px;
+      height: 350px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+      cursor: pointer;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: center;
+      background-color: #ffffff;
+    }
+
+    .flashcard-front {
+      background: #ffffff;
+      color: #222;
+    }
+
+    .flashcard-back {
+      background: #ffe8cc;
+      transform: rotateY(180deg);
+      color: #333;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #ff6b6b;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #ff4757;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    @media screen and (max-width: 500px) {
+      .flashcard-side {
+        font-size: 1rem;
+        padding: 20px;
+      }
+      button {
+        width: 100%;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Computer Architecture Flashcards</h1>
+
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-side flashcard-front" id="card-front">Loading...</div>
+      <div class="flashcard-side flashcard-back" id="card-back">Loading...</div>
+    </div>
+  </div>
+
+  <button id="nextBtn">Next ➡️</button>
+  <button id="quizStartBtn" style="display: none;">Start Quiz</button>
+
+  <script>
+    const flashcard = document.getElementById('flashcard');
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizBtn = document.getElementById('quizStartBtn');
+
+    const flashcards = [
+      { question: "What is Computer Architecture?", answer: "The design and organization of a computer's components and systems." },
+  { question: "What are the main components of a computer system?", answer: "CPU, memory, input/output devices, and storage." },
+  { question: "What does CPU stand for?", answer: "Central Processing Unit." },
+  { question: "Which unit of the CPU performs arithmetic and logic operations?", answer: "Arithmetic Logic Unit (ALU)." },
+  { question: "What is the function of the Control Unit?", answer: "It directs the operation of the processor by telling the memory, ALU, and I/O devices how to respond." },
+  { question: "What is the smallest unit of data in a computer?", answer: "Bit." },
+  { question: "How many bits are there in a byte?", answer: "8." },
+  { question: "What is pipelining in computer architecture?", answer: "A technique where multiple instruction phases are overlapped to improve performance." },
+  { question: "What is cache memory?", answer: "A small, fast memory located close to the CPU to store frequently accessed data." },
+  { question: "Which type of memory is volatile?", answer: "RAM (Random Access Memory)." },
+  { question: "What is virtual memory?", answer: "A technique that uses a portion of the hard drive as if it were RAM." },
+  { question: "What does RISC stand for?", answer: "Reduced Instruction Set Computer." },
+  { question: "What is the main characteristic of a RISC processor?", answer: "It uses a small, highly optimized set of instructions." },
+  { question: "What is a bus in computer architecture?", answer: "A communication system that transfers data between components inside a computer." },
+  { question: "What is instruction set architecture (ISA)?", answer: "The part of the processor that is visible to the programmer; it defines supported instructions and registers." }
+    ];
+
+    let currentIndex = 0;
+
+    function loadCard(index) {
+      front.textContent = flashcards[index].question;
+      back.textContent = flashcards[index].answer;
+      flashcard.classList.remove("flipped");
+    }
+
+    flashcard.addEventListener("click", () => {
+      flashcard.classList.toggle("flipped");
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        loadCard(currentIndex);
+      } else {
+        front.textContent = "🎉 You're done!";
+        back.textContent = "Ready to test your knowledge?";
+        flashcard.classList.remove("flipped");
+        nextBtn.style.display = "none";
+        quizBtn.style.display = "inline-block";
+      }
+    });
+
+    
+    
+      quizBtn.addEventListener("click", () => {
+        window.location.href = " ca quiz.html"; // ✅ Make sure quiz.html is the correct file name and path
+});
+
+    
+
+    loadCard(currentIndex);
+  </script>
+</body>
+</html>

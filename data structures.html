@@ -1,0 +1,191 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Structures - Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #b2fefa, #0ed2f7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #003049;
+    }
+
+    .flashcard-container {
+      perspective: 1500px;
+      width: 90%;
+      max-width: 650px;
+      height: 350px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+      cursor: pointer;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: center;
+      background-color: #ffffff;
+    }
+
+    .flashcard-front {
+      background: #ffffff;
+      color: #222;
+    }
+
+    .flashcard-back {
+      background: #ffe8cc;
+      transform: rotateY(180deg);
+      color: #333;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #ff6b6b;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #ff4757;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    @media screen and (max-width: 500px) {
+      .flashcard-side {
+        font-size: 1rem;
+        padding: 20px;
+      }
+      button {
+        width: 100%;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Data Structures Flashcards</h1>
+
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-side flashcard-front" id="card-front">Loading...</div>
+      <div class="flashcard-side flashcard-back" id="card-back">Loading...</div>
+    </div>
+  </div>
+
+  <button id="nextBtn">Next ➡️</button>
+  <button id="quizStartBtn" style="display: none;">Start Quiz</button>
+
+  <script>
+    const flashcard = document.getElementById('flashcard');
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizBtn = document.getElementById('quizStartBtn');
+
+    const flashcards = [
+      { question: "What is a Data Structure?", answer: "A way of organizing and storing data so that it can be accessed and modified efficiently." },
+      { question: "Name some common types of data structures.", answer: "Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Hash Tables, Heaps, and Tries." },
+      { question: "What is an Array?", answer: "A collection of elements identified by index, stored in contiguous memory locations." },
+      { question: "What is a Linked List?", answer: "A linear structure where each element (node) contains a value and a pointer to the next node." },
+      { question: "Stack vs Queue?", answer: "Stack: LIFO. Queue: FIFO. Stack removes the last item added; queue removes the first." },
+      { question: "What is a Tree?", answer: "A hierarchical structure with nodes. Each node may have children; top node is the root." },
+      { question: "Binary Tree?", answer: "Each node has at most two children (left and right)." },
+      { question: "What is a Hash Table?", answer: "Maps keys to values using a hash function to compute the index in an array of buckets." },
+      { question: "What is a Graph?", answer: "A collection of nodes (vertices) and edges connecting them." },
+      { question: "Heap?", answer: "A tree-based structure satisfying the heap property: max-heap (parent > children) or min-heap." },
+      { question: "Time Complexity?", answer: "Measure of the amount of time an algorithm takes to run as a function of input size." },
+      { question: "Big O Notations?", answer: "Describes upper bound of algorithm’s time: O(1), O(n), O(log n), O(n^2), etc." },
+      { question: "Recursion?", answer: "A function calling itself with smaller inputs; must have a base case." },
+      { question: "What is a Trie?", answer: "A tree-like structure for storing strings, used for fast search, often in dictionaries." },
+      { question: "Dynamic Programming?", answer: "Solving problems by breaking into overlapping subproblems and storing the solutions." }
+    ];
+
+    let currentIndex = 0;
+
+    function loadCard(index) {
+      front.textContent = flashcards[index].question;
+      back.textContent = flashcards[index].answer;
+      flashcard.classList.remove("flipped");
+    }
+
+    flashcard.addEventListener("click", () => {
+      flashcard.classList.toggle("flipped");
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        loadCard(currentIndex);
+      } else {
+        front.textContent = "🎉 You're done!";
+        back.textContent = "Ready to test your knowledge?";
+        flashcard.classList.remove("flipped");
+        nextBtn.style.display = "none";
+        quizBtn.style.display = "inline-block";
+      }
+    });
+
+    
+    
+      quizBtn.addEventListener("click", () => {
+        window.location.href = " ds quiz.html"; // ✅ Make sure quiz.html is the correct file name and path
+});
+
+    
+
+    loadCard(currentIndex);
+  </script>
+</body>
+</html>
